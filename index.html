@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>Samadrit Das — Technical Architect &amp; Creative Technologist</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}html{scroll-behavior:smooth;}}::-webkit-scrollbar{display:none;}
+
+/* ===== "OUT OF THE BOX" SCROLL REVEAL SYSTEM ===== */
+.reveal-box{
+  opacity:0;
+  transform:perspective(1200px) translateY(70px) translateZ(-140px) rotateX(-18deg) scale(0.86);
+  filter:blur(6px);
+  transform-origin:50% 100%;
+  transition:opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1), filter .9s cubic-bezier(.16,1,.3,1);
+  will-change:transform,opacity,filter;
+}
+.reveal-box.is-visible{
+  opacity:1;
+  transform:perspective(1200px) translateY(0) translateZ(0) rotateX(0deg) scale(1);
+  filter:blur(0);
+}
+.reveal-box.lid::before{
+  content:"";
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(245,160,58,.35),rgba(0,0,0,0));
+  opacity:0;
+  transform:scaleY(1);
+  transform-origin:top;
+  pointer-events:none;
+  border-radius:inherit;
+  transition:opacity .6s ease, transform .7s cubic-bezier(.7,0,.3,1);
+}
+.reveal-box.lid.is-visible::before{
+  opacity:1;
+  transform:scaleY(0);
+  transition-delay:.15s;
+}
+.reveal-stagger > *{transition-delay:calc(var(--stagger-index,0) * 90ms);}
+@media (prefers-reduced-motion: reduce){
+  .reveal-box{opacity:1!important;transform:none!important;filter:none!important;transition:none!important;}
+}
+
+/* Cursor glow trail */
+#cursor-glow{
+  position:fixed;top:0;left:0;width:26px;height:26px;border-radius:50%;
+  background:radial-gradient(circle, rgba(245,160,58,0.55), rgba(245,160,58,0) 70%);
+  pointer-events:none;z-index:9999;mix-blend-mode:screen;
+  transform:translate(-50%,-50%);transition:opacity .3s ease;
+  opacity:0;
+}
+
+/* ===== LAB / TOOLS & GAMES WIDGETS ===== */
+.lab-card{cursor:pointer;position:relative;isolation:isolate;}
+.lab-card::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;
+  box-shadow:0 0 0 1px rgba(255,184,108,0);transition:box-shadow .3s ease;pointer-events:none;
+}
+.lab-card:hover::after{box-shadow:0 0 0 1px rgba(255,184,108,.4);}
+.kmap-cell{
+  width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;
+  border-radius:6px;font-family:"Space Mono",monospace;font-weight:700;cursor:pointer;
+  user-select:none;transition:all .15s ease;
+}
+.kmap-cell[data-val="0"]{background:#1a1a2a;color:#8a8aa3;}
+.kmap-cell[data-val="1"]{background:#ffb86c;color:#241a00;box-shadow:0 0 14px rgba(255,184,108,.5);}
+.kmap-cell[data-val="X"]{background:#292839;color:#e9c349;border:1px dashed #e9c349;}
+.cube-net{display:grid;grid-template-columns:repeat(4,44px);grid-template-rows:repeat(3,44px);gap:4px;}
+.cube-face{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:2px;}
+.cube-sticker{border-radius:3px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.5);}
+.ludo-track{position:relative;width:100%;height:70px;background:#1a1a2a;border-radius:10px;overflow:hidden;}
+.ludo-cell{position:absolute;top:50%;transform:translateY(-50%);width:6.5%;height:80%;border-radius:4px;background:#292839;}
+.ludo-token{position:absolute;top:50%;width:26px;height:26px;border-radius:50%;transform:translate(-50%,-50%);transition:left .5s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 10px rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+.bug-line{font-family:"Space Mono",monospace;font-size:13px;line-height:1.7;padding:2px 8px;border-radius:4px;cursor:pointer;white-space:pre;transition:background .15s ease;}
+.bug-line:hover{background:rgba(255,184,108,.12);}
+.bug-line.correct{background:rgba(233,195,73,.25);}
+.bug-line.wrong{background:rgba(255,110,110,.2);}
+/* ===== SMOOTH SECTION-TO-SECTION TRANSITIONS ===== */
+main section{
+  position:relative;
+  opacity:0;
+  transform:translateY(36px);
+  transition:opacity 1.1s cubic-bezier(.16,1,.3,1), transform 1.1s cubic-bezier(.16,1,.3,1);
+  will-change:opacity,transform;
+}
+main section.section-visible{opacity:1;transform:translateY(0);}
+/* Soft gradient seam so adjacent sections with different background tones blend rather than cut hard */
+main section::before{
+  content:"";position:absolute;left:0;right:0;top:-1px;height:120px;pointer-events:none;z-index:5;
+  background:linear-gradient(to bottom, var(--seam-color, rgba(13,13,28,0.6)), rgba(0,0,0,0));
+}
+main section:first-of-type::before{display:none;}
+@media (prefers-reduced-motion: reduce){
+  main section{opacity:1!important;transform:none!important;transition:none!important;}
+}
+#toolModal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:1.25rem;}
+#toolModal.open{display:flex;}
+#toolModalBackdrop{position:absolute;inset:0;background:rgba(5,5,12,.82);backdrop-filter:blur(6px);}
+#toolModalPanel{position:relative;z-index:1;max-width:860px;width:100%;max-height:88vh;overflow-y:auto;border-radius:1rem;}
+</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "outline-variant": "#56423c",
+          "outline": "#a48b83",
+          "on-tertiary-container": "#4f3e00",
+          "on-primary-fixed-variant": "#7d2d07",
+          "on-secondary-container": "#402300",
+          "on-surface-variant": "#dcc1b7",
+          "primary": "#ffb59a",
+          "inverse-surface": "#e3e0f6",
+          "on-tertiary": "#3c2f00",
+          "tertiary-container": "#cca730",
+          "secondary-fixed": "#ffdcbc",
+          "on-primary": "#5b1b00",
+          "secondary-container": "#cd7f17",
+          "on-secondary-fixed": "#2c1700",
+          "tertiary-fixed": "#ffe088",
+          "surface-bright": "#383849",
+          "on-secondary-fixed-variant": "#683c00",
+          "on-tertiary-fixed-variant": "#574500",
+          "surface-variant": "#343344",
+          "tertiary": "#e9c349",
+          "secondary": "#ffb86c",
+          "on-tertiary-fixed": "#241a00",
+          "surface-container-high": "#292839",
+          "surface-container": "#1e1e2e",
+          "on-primary-fixed": "#380d00",
+          "surface-container-lowest": "#0d0d1c",
+          "primary-container": "#dc744a",
+          "on-secondary": "#492900",
+          "secondary-fixed-dim": "#ffb86c",
+          "on-primary-container": "#4f1700",
+          "on-error-container": "#ffdad6",
+          "surface-tint": "#ffb59a",
+          "surface": "#121221",
+          "tertiary-fixed-dim": "#e9c349",
+          "surface-container-low": "#1a1a2a",
+          "surface-container-highest": "#343344",
+          "inverse-primary": "#9c431e",
+          "error": "#ffb4ab",
+          "error-container": "#93000a",
+          "inverse-on-surface": "#2f2f3f",
+          "on-surface": "#e3e0f6",
+          "on-error": "#690005",
+          "primary-fixed-dim": "#ffb59a",
+          "primary-fixed": "#ffdbce",
+          "surface-dim": "#121221",
+          "background": "#121221",
+          "on-background": "#e3e0f6"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "space-md": "1rem",
+          "margin": "3rem",
+          "space-xs": "0.25rem",
+          "space-xl": "2.5rem",
+          "gutter-mobile": "1rem",
+          "margin-mobile": "1.25rem",
+          "gutter": "1.5rem",
+          "space-lg": "1.5rem",
+          "space-sm": "0.5rem"
+        },
+        "fontFamily": {
+          "headline-sm": [
+            "Space Grotesk"
+          ],
+          "label-sm": [
+            "Space Mono"
+          ],
+          "headline-lg": [
+            "Space Grotesk"
+          ],
+          "body-sm": [
+            "Space Mono"
+          ],
+          "display": [
+            "Space Grotesk"
+          ],
+          "body-md": [
+            "Space Mono"
+          ],
+          "headline-lg-mobile": [
+            "Space Grotesk"
+          ],
+          "label-md": [
+            "Space Mono"
+          ],
+          "headline-md": [
+            "Space Grotesk"
+          ],
+          "body-lg": [
+            "Space Mono"
+          ],
+          "display-mobile": [
+            "Space Grotesk"
+          ]
+        },
+        "fontSize": {
+          "headline-sm": [
+            "20px",
+            {
+              "lineHeight": "28px",
+              "letterSpacing": "0em",
+              "fontWeight": "500"
+            }
+          ],
+          "label-sm": [
+            "11px",
+            {
+              "lineHeight": "14px",
+              "letterSpacing": "0.12em",
+              "fontWeight": "700"
+            }
+          ],
+          "headline-lg": [
+            "40px",
+            {
+              "lineHeight": "48px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "600"
+            }
+          ],
+          "body-sm": [
+            "12px",
+            {
+              "lineHeight": "18px",
+              "letterSpacing": "0.01em",
+              "fontWeight": "400"
+            }
+          ],
+          "display": [
+            "64px",
+            {
+              "lineHeight": "72px",
+              "letterSpacing": "-0.03em",
+              "fontWeight": "700"
+            }
+          ],
+          "body-md": [
+            "14px",
+            {
+              "lineHeight": "22px",
+              "letterSpacing": "0em",
+              "fontWeight": "400"
+            }
+          ],
+          "headline-lg-mobile": [
+            "30px",
+            {
+              "lineHeight": "38px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "600"
+            }
+          ],
+          "label-md": [
+            "13px",
+            {
+              "lineHeight": "16px",
+              "letterSpacing": "0.08em",
+              "fontWeight": "700"
+            }
+          ],
+          "headline-md": [
+            "28px",
+            {
+              "lineHeight": "36px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "600"
+            }
+          ],
+          "body-lg": [
+            "16px",
+            {
+              "lineHeight": "26px",
+              "letterSpacing": "-0.01em",
+              "fontWeight": "400"
+            }
+          ],
+          "display-mobile": [
+            "40px",
+            {
+              "lineHeight": "48px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "700"
+            }
+          ]
+        }
+      },
+    },
+  }</script></head><body class="bg-background font-body-md text-on-surface antialiased selection:bg-secondary selection:text-on-secondary relative"><div class="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_50%_15%,#1a1a2a_0%,#121221_45%,#0d0d1c_100%)] opacity-95"></div><div class="pointer-events-none fixed inset-0 z-0 bg-[linear-gradient(to_right,#34334415_1px,transparent_1px),linear-gradient(to_bottom,#34334415_1px,transparent_1px)] bg-[size:4rem_4rem]"></div><header class="fixed top-0 left-0 right-0 z-50 flex justify-center pt-space-md px-margin-mobile md:px-margin pointer-events-none"><div class="h-16 w-full max-w-7xl px-space-md bg-surface-container-lowest/80 backdrop-blur-2xl rounded-full shadow-[0_20px_50px_rgba(3,3,10,0.85),inset_0_1px_0_rgba(255,184,108,0.25)] flex items-center justify-between pointer-events-auto"><div class="flex items-center gap-space-sm pl-space-xs"><div class="flex items-center gap-space-xs bg-surface-container-low/90 px-space-sm py-space-xs rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]"><span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">SD</span><span class="text-outline-variant font-label-sm text-label-sm">/</span><span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant hidden sm:inline">DEV &amp; 3D</span></div></div><nav class="hidden lg:flex items-center gap-space-xs px-space-xs" data-active-classes="text-secondary bg-surface-container-high font-bold rounded-full"><a aria-current="page" class="px-space-md py-space-xs uppercase tracking-widest transition-colors duration-150 text-secondary bg-surface-container-high font-bold rounded-full" data-path="story" href="#story">Story</a><a class="px-space-md py-space-xs rounded-full font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="journey" href="#journey">Journey</a><a class="px-space-md py-space-xs rounded-full font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="tech-sculpture" href="#tech-sculpture">Tech Sculpture</a><a class="px-space-md py-space-xs rounded-full font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="selected-works" href="#selected-works">Selected Works</a><a class="px-space-md py-space-xs rounded-full font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="tools-games" href="#tools-games">Lab</a><a class="px-space-md py-space-xs rounded-full font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant hover:text-on-surface transition-colors duration-150" data-path="contact" href="#contact">Contact</a></nav><div class="flex items-center gap-space-md pr-space-xs"><div class="hidden md:flex items-center gap-space-sm bg-surface-container-low/90 px-space-md py-space-xs rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]"><div class="relative flex h-2 w-2 items-center justify-center"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span><span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-secondary shadow-[0_0_8px_#ffb86c]"></span></div><span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">AVAILABLE H2 2025</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-[0_0_12px_rgba(255,181,154,0.35)]"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><aside class="fixed right-margin-mobile md:right-space-xl top-1/2 -translate-y-1/2 z-40 hidden sm:flex flex-col items-center pointer-events-none"><div class="relative flex flex-col items-center h-48 w-6 justify-center"><div class="w-[1px] h-full bg-surface-variant relative"><div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"><span class="w-2.5 h-2.5 rounded-full bg-secondary shadow-[0_0_14px_#ffb86c]"></span><span class="animate-pulse absolute w-4 h-4 rounded-full bg-secondary/30"></span></div></div><span class="font-label-sm text-label-sm text-on-surface-variant rotate-90 mt-space-lg uppercase tracking-widest">01 / 05</span></div></aside><main class="relative z-10 w-full pt-16 bg-transparent min-h-screen"><div class="flex flex-col w-full selection:bg-secondary selection:text-on-secondary">
+<!-- ==========================================
+       SECTION 1: HERO (Kolkata Golden Hour Dusk)
+       ========================================== -->
+<section class="relative w-full min-h-[92vh] flex flex-col justify-between px-margin-mobile md:px-margin pt-space-md pb-space-xl overflow-hidden" id="story">
+<!-- Tactile background plate with deep indigo dusk gradient & foil deboss -->
+<div class="absolute inset-0 pointer-events-none bg-gradient-to-b from-surface via-surface-container-lowest to-surface-container-low opacity-95"></div>
+<!-- Sky Foil Emboss (Alpona Geometric Vector Art) -->
+<div class="absolute top-0 right-0 w-full md:w-3/4 h-[550px] pointer-events-none opacity-20 mix-blend-screen flex items-center justify-end overflow-hidden">
+<svg class="w-full h-full text-secondary/40 stroke-current fill-none" viewbox="0 0 800 600">
+<circle cx="580" cy="180" r="160" stroke-dasharray="4 8" stroke-width="1"></circle>
+<circle cx="580" cy="180" r="110" stroke-width="1.5"></circle>
+<path d="M580,40 L600,120 L680,100 L620,160 L680,220 L600,200 L580,280 L560,200 L480,220 L540,160 L480,100 L560,120 Z" stroke-width="1"></path>
+<path d="M420,180 Q500,80 580,180 T740,180" stroke-dasharray="2 6" stroke-width="1"></path>
+<path d="M200,320 C320,240 440,380 620,300" opacity="0.6" stroke-width="1.5"></path>
+</svg>
+</div>
+<!-- Howrah Bridge Dusk Atmospheric Silhouette Layer -->
+<div class="absolute bottom-16 left-0 right-0 h-48 pointer-events-none opacity-15 mix-blend-luminosity overflow-hidden">
+<svg class="w-full h-full preserve-3d" fill="none" viewbox="0 0 1440 220">
+<path d="M 0,220 L 0,140 L 120,140 L 260,20 L 320,20 L 460,140 L 980,140 L 1120,20 L 1180,20 L 1320,140 L 1440,140 L 1440,220 Z" fill="#292839"></path>
+<path d="M 260,20 L 1180,20 M 320,20 L 980,140 M 1120,20 L 460,140" stroke="#56423c" stroke-width="1.5"></path>
+<line stroke="#e9c349" stroke-opacity="0.3" stroke-width="1" x1="0" x2="1440" y1="140" y2="140"></line>
+</svg>
+</div>
+<!-- Warm Marigold String Light Garland with miniature caustics -->
+<div class="relative z-20 w-full max-w-7xl mx-auto flex items-center justify-between pt-space-xs pb-space-lg">
+<div class="flex items-center gap-space-xs bg-surface-container/90 px-space-md py-space-xs rounded-full shadow-[0_12px_28px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,184,108,0.2)]">
+<span class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_10px_#ffb86c]"></span>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">Telemetry Active: Kolkata 22.57° N</span>
+</div>
+<div class="hidden sm:flex items-center gap-space-lg">
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary shadow-[0_0_12px_#ffb86c]"></span>
+<span class="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_10px_#e9c349]"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container shadow-[0_0_12px_#dc744a]"></span>
+</div>
+<span class="font-label-sm text-label-sm text-outline tracking-wider uppercase">Dusk Specular / 1840 HRS</span>
+</div>
+</div>
+<!-- Hero Central Content Grid -->
+<div class="relative z-20 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center my-auto">
+<!-- Left Editorial Column -->
+<div class="lg:col-span-7 flex flex-col gap-space-md">
+<!-- Tactile Pill Metadata Badge -->
+<div class="inline-flex items-center gap-space-sm bg-surface-container-high/90 px-space-md py-space-xs rounded-full w-fit shadow-[0_4px_16px_rgba(0,0,0,0.6)]">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-secondary">Creative Technologist · Systems Architect</span>
+</div>
+<h1 class="font-display text-display text-on-surface tracking-tight leading-[1.05]">
+          Hi, I'm <span class="text-transparent bg-clip-text bg-gradient-to-r from-secondary via-primary to-tertiary">Samadrit</span>.
+        </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
+          Software engineer. Chai enthusiast. Occasional code wizard. Molding tangible computational systems, distributed micro-frontends, and high-performance WebGL instruments.
+        </p>
+<!-- Tactile Chai Stall Terminal Card -->
+<div class="mt-space-sm p-space-md bg-surface-container/95 rounded-xl shadow-[0_20px_40px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,184,108,0.2)] max-w-lg">
+<div class="flex items-center justify-between pb-space-xs mb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-error/80"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary/80"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-secondary/80"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant ml-space-xs tracking-wider">CHAI_STALL.EXE</span>
+</div>
+<span class="font-label-sm text-label-sm text-tertiary font-bold tracking-widest">RUNNING</span>
+</div>
+<div class="flex items-center gap-space-md">
+<!-- Brass Steam Icon -->
+<div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center shadow-[inset_0_1px_2px_rgba(255,184,108,0.3)]">
+<span class="material-symbols-outlined text-secondary text-xl">coffee</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-body-sm text-body-sm text-on-surface">Caffeine.exe</span>
+<span class="inline-block w-2 h-2 rounded-full bg-secondary animate-ping"></span>
+</div>
+<span class="font-body-sm text-body-sm text-outline">Steeping clay pot Bhar · 98.4°C · Heap Allocated</span>
+</div>
+</div>
+</div>
+<!-- CTA Cluster -->
+<div class="flex flex-wrap items-center gap-space-md mt-space-sm pt-space-xs">
+<a class="group relative px-space-lg py-space-sm bg-primary-container text-on-primary font-label-md text-label-md uppercase tracking-wider rounded-lg shadow-[0_8px_20px_rgba(220,116,74,0.35),inset_0_1px_0_rgba(255,255,255,0.4)] hover:shadow-[0_0_24px_rgba(245,160,58,0.5)] transition-all duration-200 active:translate-y-0.5" href="#selected-works">
+<span class="flex items-center gap-space-xs">
+              Explore Works
+              <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</span>
+</a>
+<a class="px-space-lg py-space-sm bg-surface-container-high text-on-surface font-label-md text-label-md uppercase tracking-wider rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.08)] hover:text-secondary transition-colors" href="#contact">
+            Initiate Contact
+          </a>
+</div>
+</div>
+<!-- Right 3D Visual Vignette: Ambassador Taxi & Dusk Artifacts -->
+<div class="lg:col-span-5 relative flex items-center justify-center">
+<!-- Ambient Saffron Caustic Pool behind Card -->
+<div class="absolute -inset-4 bg-secondary/15 rounded-full blur-3xl pointer-events-none"></div>
+<div class="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-[0_25px_60px_rgba(3,3,10,0.9),inset_0_1px_0_rgba(255,184,108,0.3)] bg-surface-container-low p-2">
+<!-- Main Hero Scene Imagery -->
+<img class="w-full h-full object-cover rounded-lg" data-alt="Photorealistic low-poly dusk scene of Kolkata golden hour. Iconic yellow Ambassador taxi parked near a rustic corrugated tin and weathered teak wood chai stall. Ceramic kettle emitting delicate curling steam. Howrah Bridge hazy silhouette against a deep indigo twilight sky with glowing amber string lights and warm saffron street reflections." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0Y3G5fKFg9PG5fDeBCPMDCJJT7rFxyvMnXKLIEt2VDsAWhQaBrwD_1QPg6ROsKS0MHnpyqXx-Td9JuGmoqdwQEwzpW4E3wRpHMz7kaPfPjXiJT3j4ToSL2Ug6bicaPMoOUc48aZw3TlBzP10na6NE01BkVc4wJsotNe0tjFiNJfxOohEazYbaI3pX2XqRNm-NMekpmKVnyv2fTh35fmKAw5HxjNywNnnRKiBiwSHvGT_RD8rxVrpE"/>
+<!-- Interactive Saffron Pip on Taxi Door Handle -->
+<div class="absolute top-1/2 right-1/3 -translate-y-2 -translate-x-2 group cursor-pointer">
+<span class="animate-ping absolute inline-flex h-6 w-6 rounded-full bg-secondary opacity-75"></span>
+<div class="relative w-6 h-6 rounded-full bg-secondary flex items-center justify-center shadow-[0_0_16px_#ffb86c]">
+<span class="w-2 h-2 rounded-full bg-surface-container-lowest"></span>
+</div>
+<!-- Tooltip Hover -->
+<div class="absolute bottom-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap bg-surface-container-lowest/90 px-space-sm py-space-xs rounded font-label-sm text-label-sm text-secondary shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
+              TAXI_CABIN // INSP_2020
+            </div>
+</div>
+<!-- Bottom Telemetry HUD overlay on card -->
+<div class="absolute bottom-4 left-4 right-4 bg-surface-container-lowest/80 backdrop-blur-md px-space-md py-space-xs rounded flex items-center justify-between text-on-surface">
+<span class="font-label-sm text-label-sm text-secondary">AMBASSADOR MK-II</span>
+<span class="font-label-sm text-label-sm text-outline">WB-01-A-4482</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Quiet Pulsing Scroll Indicator -->
+<div class="relative z-20 flex flex-col items-center justify-center pt-space-md">
+<a class="flex flex-col items-center gap-space-xs group" href="#transition">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant group-hover:text-secondary transition-colors">Scroll Journey</span>
+<div class="w-4 h-8 rounded-full bg-surface-container flex items-start justify-center p-1 shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
+<span class="w-1.5 h-2 bg-secondary rounded-full animate-bounce"></span>
+</div>
+</a>
+</div>
+</section>
+<!-- ==========================================
+       SECTION 2: TRANSITION (The Particle Spline)
+       ========================================== -->
+<section class="relative w-full py-space-xl px-margin-mobile md:px-margin overflow-hidden bg-surface-container-lowest" id="transition">
+<div class="max-w-7xl mx-auto flex flex-col items-center text-center relative z-10">
+<!-- Glowing Brass Spline Visual -->
+<div class="w-full max-w-2xl h-32 relative flex items-center justify-center">
+<svg class="w-full h-full text-secondary stroke-current fill-none" viewbox="0 0 600 120">
+<path d="M 0,10 C 150,10 200,110 300,60 C 400,10 450,110 600,110" stroke-linecap="round" stroke-width="2"></path>
+<circle class="animate-pulse shadow-[0_0_16px_#ffb86c]" cx="300" cy="60" fill="#ffb86c" r="5"></circle>
+<circle cx="150" cy="35" fill="#e9c349" r="2.5"></circle>
+<circle cx="450" cy="85" fill="#ffb59a" r="2.5"></circle>
+</svg>
+</div>
+<!-- Tactile Typography Card -->
+<div class="p-space-lg md:p-space-xl bg-surface-container rounded-xl shadow-[0_20px_45px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,184,108,0.2)] max-w-2xl w-full">
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-tertiary block mb-space-xs">
+          TELEMETRY STREAM // ORIGIN
+        </span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">
+          “It started with a Bengali Quora.”
+        </h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-space-sm max-w-lg mx-auto">
+          The physical warmth of street conversations dissolved into digital threads. In 2020, curiosity triggered an irreversible loop into distributed systems.
+        </p>
+</div>
+</div>
+</section>
+<!-- ==========================================
+       SECTION 3: CHAPTER 1 (2020, THE SPARK)
+       ========================================== -->
+<section class="relative w-full py-space-xl px-margin-mobile md:px-margin bg-surface" id="journey">
+<div class="max-w-7xl mx-auto flex flex-col gap-space-xl">
+<!-- Section Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-sm text-label-sm text-secondary bg-surface-container px-space-sm py-1 rounded">STAGE 01 · BEGINNER PROJECTS</span>
+<span class="font-label-sm text-label-sm text-outline tracking-wider uppercase">2020 · Where I Started</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">The Spark of Creation</h2>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">
+          My first real projects — Bongnity (a Bengali Quora) and a billing tool with GST calculation. Simple, beginner-level builds where I learned the basics of shipping working software.
+        </p>
+</div>
+<!-- Chapter 1 Interactive Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-space-lg">
+<!-- STAGE-INDICATOR STRIP: shows the growth arc at a glance -->
+<div class="md:col-span-12 flex items-center gap-space-xs overflow-x-auto pb-space-xs">
+<span class="font-label-sm text-label-sm text-secondary bg-surface-container-high px-space-sm py-1 rounded-full whitespace-nowrap">01 · Beginner (2020) — you are here</span>
+<span class="text-outline">→</span>
+<span class="font-label-sm text-label-sm text-outline px-space-sm py-1 rounded-full whitespace-nowrap">02 · Intermediate (2021–23)</span>
+<span class="text-outline">→</span>
+<span class="font-label-sm text-label-sm text-outline px-space-sm py-1 rounded-full whitespace-nowrap">03 · Production (2024)</span>
+<span class="text-outline">→</span>
+<span class="font-label-sm text-label-sm text-outline px-space-sm py-1 rounded-full whitespace-nowrap">04 · Current (2025–26)</span>
+</div>
+<!-- Wooden Letterpress Bengali Block Card -->
+<div class="md:col-span-7 bg-surface-container rounded-xl p-space-lg flex flex-col justify-between shadow-[0_16px_36px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.06)] relative overflow-hidden">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Artifact #01 — Woodblock Typography</span>
+<span class="font-label-sm text-label-sm text-secondary">UTF-8 BENGALI</span>
+</div>
+<!-- Carved Wooden Characters Display -->
+<div class="my-space-lg flex items-center justify-center gap-space-md">
+<div class="w-20 h-24 bg-surface-container-high rounded-lg flex items-center justify-center shadow-[inset_0_2px_6px_rgba(0,0,0,0.9),0_4px_12px_rgba(255,184,108,0.15)] group hover:-translate-y-1 transition-transform">
+<span class="font-display text-4xl text-secondary font-bold">অ</span>
+</div>
+<div class="w-20 h-24 bg-surface-container-high rounded-lg flex items-center justify-center shadow-[inset_0_2px_6px_rgba(0,0,0,0.9),0_4px_12px_rgba(255,184,108,0.15)] group hover:-translate-y-1 transition-transform">
+<span class="font-display text-4xl text-primary font-bold">ক</span>
+</div>
+<div class="w-20 h-24 bg-surface-container-high rounded-lg flex items-center justify-center shadow-[inset_0_2px_6px_rgba(0,0,0,0.9),0_4px_12px_rgba(255,184,108,0.15)] group hover:-translate-y-1 transition-transform">
+<span class="font-display text-4xl text-tertiary font-bold">খ</span>
+</div>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Multilingual Knowledge Architecture</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-space-xs">
+              Engineered Bengali Quora: an online Q&amp;A platform tailored for native Bengali speakers with real-time indexing and rich markdown rendering.
+            </p>
+</div>
+</div>
+<!-- Tactile Curled Paper Invoice & Ticking Counter Card -->
+<div class="md:col-span-5 bg-surface-container-low rounded-xl p-space-lg flex flex-col justify-between shadow-[0_16px_36px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,184,108,0.15)] relative">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Ledger // 2020 Client Works</span>
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+</div>
+<!-- Invoice Simulation Tile -->
+<div class="my-space-md p-space-md bg-surface-container rounded-lg shadow-[0_8px_20px_rgba(0,0,0,0.8)] relative">
+<div class="flex justify-between items-center pb-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant">INVOICE #SD-2020-09</span>
+<span class="font-label-sm text-label-sm text-tertiary">PAID FULL</span>
+</div>
+<div class="flex items-baseline justify-between pt-space-xs">
+<span class="font-body-sm text-body-sm text-outline">Accumulated Value</span>
+<span class="font-display text-2xl text-secondary font-bold" id="counter-val">₹ 1,48,500</span>
+</div>
+<div class="w-full bg-surface-variant h-1.5 rounded-full mt-space-sm overflow-hidden">
+<div class="bg-secondary h-full w-4/5 rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-space-xs">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full bg-surface-bright flex items-center justify-center shadow">
+<span class="font-label-sm text-label-sm text-on-surface">U1</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center shadow">
+<span class="font-label-sm text-label-sm text-secondary">U2</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Client Trust Metric: 99.4%</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ==========================================
+       SECTION 4: CHAPTERS 2–3 (2021–2023, BUILDING & CONNECTING)
+       ========================================== -->
+<section class="relative w-full py-space-xl px-margin-mobile md:px-margin bg-surface-container-lowest">
+<div class="max-w-7xl mx-auto flex flex-col gap-space-xl">
+<!-- Section Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-sm text-label-sm text-secondary bg-surface-container px-space-sm py-1 rounded">STAGE 02 · INTERMEDIATE PROJECTS</span>
+<span class="font-label-sm text-label-sm text-outline tracking-wider uppercase">2021 – 2023 · Leveling Up</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Hardware, Community &amp; Systems</h2>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">
+          The stage where projects got harder: a Biometric Attendance System with real IoT hardware (ESP8266), Campuspace (which won the KRITANJ-2K23 award), and a hiring internship at SoftGenics.
+        </p>
+</div>
+<!-- 4-Tile Instrumental Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-space-lg">
+<div class="md:col-span-12 flex items-center gap-space-xs overflow-x-auto pb-space-xs">
+<span class="font-label-sm text-label-sm text-outline px-space-sm py-1 rounded-full whitespace-nowrap">01 · Beginner (2020)</span>
+<span class="text-outline">→</span>
+<span class="font-label-sm text-label-sm text-secondary bg-surface-container-high px-space-sm py-1 rounded-full whitespace-nowrap">02 · Intermediate (2021–23) — you are here</span>
+<span class="text-outline">→</span>
+<span class="font-label-sm text-label-sm text-outline px-space-sm py-1 rounded-full whitespace-nowrap">03 · Production (2024)</span>
+<span class="text-outline">→</span>
+<span class="font-label-sm text-label-sm text-outline px-space-sm py-1 rounded-full whitespace-nowrap">04 · Current (2025–26)</span>
+</div>
+<!-- Tile 1: ESP8266 Biometric Hardware Scanner -->
+<div class="md:col-span-6 lg:col-span-4 bg-surface-container p-space-lg rounded-xl flex flex-col justify-between shadow-[0_16px_36px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.05)]">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-secondary">ESP8266 MODULAR PCB</span>
+<span class="material-symbols-outlined text-tertiary text-lg">memory</span>
+</div>
+<!-- Graphic Representation of PCB & Laser Scanner -->
+<div class="my-space-md p-space-md bg-surface-container-lowest rounded-lg relative overflow-hidden flex flex-col items-center justify-center">
+<div class="relative w-28 h-28 rounded-lg bg-surface-container-high flex items-center justify-center shadow-[inset_0_2px_8px_rgba(0,0,0,0.9)]">
+<span class="material-symbols-outlined text-5xl text-outline-variant">fingerprint</span>
+<!-- Laser Scan Line -->
+<div class="absolute left-0 right-0 h-0.5 bg-secondary shadow-[0_0_8px_#ffb86c] animate-pulse"></div>
+</div>
+<div class="mt-space-sm flex items-center gap-space-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-ping"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">OPTICAL AUTH: OK</span>
+</div>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Biometric Attendance Rig</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-space-xs">
+              Low-latency firmware syncing biometric prints to an encrypted cloud database over local 2.4GHz mesh.
+            </p>
+</div>
+</div>
+<!-- Tile 2: Winner Trophy Card (KRITANJ-2K23) -->
+<div class="md:col-span-6 lg:col-span-4 bg-surface-container-high p-space-lg rounded-xl flex flex-col justify-between shadow-[0_16px_36px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,184,108,0.25)] relative overflow-hidden">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-tertiary">1ST PLACE / CHAMPION</span>
+<span class="material-symbols-outlined text-secondary text-lg">emoji_events</span>
+</div>
+<div class="my-space-md flex flex-col items-center justify-center text-center">
+<div class="w-20 h-20 rounded-full bg-gradient-to-tr from-tertiary-container to-secondary flex items-center justify-center shadow-[0_0_30px_rgba(245,160,58,0.4)] mb-space-sm">
+<span class="material-symbols-outlined text-on-secondary text-3xl">trophy</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface">KRITANJ-2K23</span>
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-widest mt-1">National Tech Conclave</span>
+</div>
+<div class="bg-surface-container-lowest/80 p-space-xs rounded flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-outline">Category: Systems IoT</span>
+<span class="font-label-sm text-label-sm text-tertiary">Gold Citation</span>
+</div>
+</div>
+<!-- Tile 3: Relief Map of West Bengal & Pandal Illumination Tracker -->
+<div class="md:col-span-12 lg:col-span-4 bg-surface-container p-space-lg rounded-xl flex flex-col justify-between shadow-[0_16px_36px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.05)]">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-secondary">COMMUNITY MAP GIS</span>
+<span class="font-label-sm text-label-sm text-outline">WB / IND</span>
+</div>
+<div class="my-space-md p-space-sm bg-surface-container-low rounded-lg flex items-center justify-center relative">
+<!-- Simulated Stylized Geographic Vector -->
+<svg class="w-full h-28 text-outline-variant stroke-current fill-none" viewbox="0 0 200 120">
+<path d="M 60,10 L 85,20 L 110,40 L 95,70 L 130,90 L 115,115 L 70,110 L 55,75 L 40,40 Z" stroke-width="1.5"></path>
+<!-- Pandal nodes -->
+<circle class="animate-pulse shadow-[0_0_10px_#ffb86c]" cx="95" cy="70" fill="#ffb86c" r="4"></circle>
+<circle cx="110" cy="40" fill="#e9c349" r="3"></circle>
+<circle cx="70" cy="110" fill="#dc744a" r="3"></circle>
+<line stroke="#ffb86c" stroke-dasharray="2 2" stroke-width="1" x1="95" x2="110" y1="70" y2="40"></line>
+</svg>
+<div class="absolute bottom-2 right-2 bg-surface-container-high/90 px-space-xs py-0.5 rounded font-label-sm text-label-sm text-secondary">
+              120+ Nodes Live
+            </div>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">PandalHop GIS Portal</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-space-xs">
+              Crowdsourced queue monitoring and interactive spatial mapping serving thousands of attendees across Kolkata.
+            </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ==========================================
+       SECTION 5: CHAPTER 4 (2024, TRUST & HEALTH)
+       ========================================== -->
+<section class="relative w-full py-space-xl px-margin-mobile md:px-margin bg-surface">
+<div class="max-w-7xl mx-auto flex flex-col gap-space-xl">
+<!-- Section Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-sm text-label-sm text-secondary bg-surface-container px-space-sm py-1 rounded">STAGE 03 · PRODUCTION-GRADE</span>
+<span class="font-label-sm text-label-sm text-outline tracking-wider uppercase">2024 · RxKeep</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Trust, Health &amp; Security <span class="font-label-sm text-label-sm text-secondary align-middle ml-space-xs bg-surface-container-high px-space-sm py-1 rounded-full uppercase tracking-widest">Flagship</span></h2>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">
+          RxKeep — a blockchain-secured prescription management system, built to stay accessible even for patients without smartphones. My first project handling real medical-grade security.
+        </p>
+</div>
+<!-- Healthtech Interactive Console -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<div class="lg:col-span-12 flex items-center gap-space-xs overflow-x-auto pb-space-xs">
+<span class="font-label-sm text-label-sm text-outline px-space-sm py-1 rounded-full whitespace-nowrap">01 · Beginner (2020)</span>
+<span class="text-outline">→</span>
+<span class="font-label-sm text-label-sm text-outline px-space-sm py-1 rounded-full whitespace-nowrap">02 · Intermediate (2021–23)</span>
+<span class="text-outline">→</span>
+<span class="font-label-sm text-label-sm text-secondary bg-surface-container-high px-space-sm py-1 rounded-full whitespace-nowrap">03 · Production (2024) — you are here</span>
+<span class="text-outline">→</span>
+<span class="font-label-sm text-label-sm text-outline px-space-sm py-1 rounded-full whitespace-nowrap">04 · Current (2025–26)</span>
+</div>
+<!-- Scanned Fiber Paper Medical Card -->
+<div class="lg:col-span-7 bg-surface-container rounded-xl p-space-lg flex flex-col justify-between shadow-[0_20px_45px_rgba(0,0,0,0.85),inset_0_1px_0_rgba(255,255,255,0.06)] relative overflow-hidden">
+<div class="flex items-center justify-between pb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-base">verified_user</span>
+<span class="font-label-sm text-label-sm text-on-surface tracking-wider uppercase">HIPAA / AES-256 Vault</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary">DIAGNOSTIC TELEMETRY</span>
+</div>
+<!-- Paper Prescription Scan Vignette -->
+<div class="my-space-md p-space-md bg-surface-container-low rounded-lg relative overflow-hidden">
+<div class="space-y-space-sm">
+<div class="flex justify-between items-center">
+<span class="font-body-sm text-body-sm text-outline">PATIENT_TOKEN: #PX-9821</span>
+<span class="font-label-sm text-label-sm text-tertiary">SIGNATURE VALID</span>
+</div>
+<div class="h-px bg-surface-variant w-full"></div>
+<div class="grid grid-cols-3 gap-space-sm py-space-xs">
+<div>
+<span class="block font-label-sm text-label-sm text-outline">BPM</span>
+<span class="font-headline-sm text-headline-sm text-secondary">72</span>
+</div>
+<div>
+<span class="block font-label-sm text-label-sm text-outline">O2 SAT</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">99%</span>
+</div>
+<div>
+<span class="block font-label-sm text-label-sm text-outline">STATUS</span>
+<span class="font-headline-sm text-headline-sm text-tertiary">OPTIMAL</span>
+</div>
+</div>
+</div>
+<!-- Horizontal Laser Sweep Beam -->
+<div class="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-secondary to-transparent shadow-[0_0_12px_#ffb86c] animate-pulse"></div>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Prescription Telemetry Pipeline <span class="text-secondary">(RxKeep)</span></h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-space-xs">
+              Built end-to-end authenticated prescription parsing pipes handling sensitive user health records with sub-100ms validation cycles.
+            </p>
+</div>
+</div>
+<!-- Security & Compliance Status Stack -->
+<div class="lg:col-span-5 flex flex-col gap-space-md">
+<div class="bg-surface-container-high p-space-md rounded-xl flex items-center justify-between shadow-[0_10px_25px_rgba(0,0,0,0.6)]">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">shield</span>
+</div>
+<div>
+<span class="font-label-md text-label-md text-on-surface block">Zero-Trust Protocol</span>
+<span class="font-body-sm text-body-sm text-outline">End-to-End Cryptography</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-secondary uppercase font-bold">ACTIVE</span>
+</div>
+<div class="bg-surface-container-high p-space-md rounded-xl flex items-center justify-between shadow-[0_10px_25px_rgba(0,0,0,0.6)]">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">sync_alt</span>
+</div>
+<div>
+<span class="font-label-md text-label-md text-on-surface block">HL7 Interop Bridge</span>
+<span class="font-body-sm text-body-sm text-outline">Real-time sync to EHR</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-tertiary uppercase font-bold">ONLINE</span>
+</div>
+<div class="bg-surface-container-high p-space-md rounded-xl flex items-center justify-between shadow-[0_10px_25px_rgba(0,0,0,0.6)]">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">data_object</span>
+</div>
+<div>
+<span class="font-label-md text-label-md text-on-surface block">Audit Trail Log</span>
+<span class="font-body-sm text-body-sm text-outline">Immutable event stream</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-primary uppercase font-bold">VERIFIED</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ==========================================
+       SECTION 6: NOW (2025–2026, PRODUCTION & AI)
+       ========================================== -->
+<section class="relative w-full py-space-xl px-margin-mobile md:px-margin bg-surface-container-lowest">
+<div class="max-w-7xl mx-auto flex flex-col gap-space-xl">
+<!-- Section Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-sm text-label-sm text-secondary bg-surface-container px-space-sm py-1 rounded">STAGE 04 · CURRENT WORK</span>
+<span class="font-label-sm text-label-sm text-outline tracking-wider uppercase">2025 – 2026 · Where I Am Now</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Enterprise Production &amp; AI Engines</h2>
+</div>
+<div class="inline-flex items-center gap-space-xs bg-surface-container px-space-md py-space-xs rounded-full">
+<span class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_#ffb86c]"></span>
+<span class="font-label-sm text-label-sm text-on-surface tracking-wider">LTIMindtree · Software Engineer (Jun 2025–Present)</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs overflow-x-auto pb-space-xs">
+<span class="font-label-sm text-label-sm text-outline px-space-sm py-1 rounded-full whitespace-nowrap">01 · Beginner (2020)</span>
+<span class="text-outline">→</span>
+<span class="font-label-sm text-label-sm text-outline px-space-sm py-1 rounded-full whitespace-nowrap">02 · Intermediate (2021–23)</span>
+<span class="text-outline">→</span>
+<span class="font-label-sm text-label-sm text-outline px-space-sm py-1 rounded-full whitespace-nowrap">03 · Production (2024)</span>
+<span class="text-outline">→</span>
+<span class="font-label-sm text-label-sm text-secondary bg-surface-container-high px-space-sm py-1 rounded-full whitespace-nowrap">04 · Current (2025–26) — you are here</span>
+</div>
+<!-- Main Enterprise Console Plate -->
+<div class="w-full bg-surface-container rounded-xl p-space-lg md:p-space-xl shadow-[0_24px_50px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,184,108,0.2)]">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center">
+<!-- Neural Vector Graph Simulation -->
+<div class="lg:col-span-6 flex flex-col gap-space-md">
+<div class="p-space-md bg-surface-container-low rounded-xl relative overflow-hidden">
+<div class="flex items-center justify-between pb-space-xs mb-space-sm border-b border-surface-variant">
+<span class="font-label-sm text-label-sm text-secondary">VECTOR EMBEDDING MATRIX (1536-D)</span>
+<span class="font-label-sm text-label-sm text-outline">QDRANT / PGVECTOR</span>
+</div>
+<!-- Animated Vector Node Schematic -->
+<svg class="w-full h-44 text-secondary stroke-current fill-none" viewbox="0 0 400 200">
+<!-- Connected Neural Web -->
+<circle cx="60" cy="50" fill="#ffb86c" r="6"></circle>
+<circle cx="160" cy="30" fill="#dc744a" r="5"></circle>
+<circle class="animate-pulse" cx="240" cy="80" fill="#e9c349" r="7"></circle>
+<circle cx="140" cy="130" fill="#ffb86c" r="5"></circle>
+<circle cx="340" cy="60" fill="#ffb86c" r="8"></circle>
+<circle cx="280" cy="160" fill="#dc744a" r="6"></circle>
+<circle cx="80" cy="170" fill="#e9c349" r="5"></circle>
+<line stroke="#56423c" stroke-width="1" x1="60" x2="160" y1="50" y2="30"></line>
+<line stroke="#ffb86c" stroke-opacity="0.8" stroke-width="1.5" x1="160" x2="240" y1="30" y2="80"></line>
+<line stroke="#e9c349" stroke-width="1.5" x1="240" x2="340" y1="80" y2="60"></line>
+<line stroke="#56423c" stroke-width="1" x1="240" x2="280" y1="80" y2="160"></line>
+<line stroke="#56423c" stroke-width="1" x1="140" x2="280" y1="130" y2="160"></line>
+<line stroke="#ffb86c" stroke-width="1.5" x1="60" x2="140" y1="50" y2="130"></line>
+<line stroke="#56423c" stroke-width="1" x1="80" x2="140" y1="170" y2="130"></line>
+</svg>
+<div class="flex items-center justify-between pt-space-xs font-label-sm text-label-sm text-outline">
+<span>Index Latency: 4.2ms</span>
+<span class="text-secondary">Cosine Similarity: 0.982</span>
+</div>
+</div>
+<!-- Monospace Metadata Badge Bar -->
+<div class="flex flex-wrap gap-space-xs">
+<span class="bg-surface-container-high px-space-sm py-1 rounded font-label-sm text-label-sm text-on-surface">RAG Enterprise Search</span>
+<span class="bg-surface-container-high px-space-sm py-1 rounded font-label-sm text-label-sm text-on-surface">Repo Intelligence Scanner</span>
+<span class="bg-surface-container-high px-space-sm py-1 rounded font-label-sm text-label-sm text-secondary">LangChain Core</span>
+</div>
+</div>
+<!-- Technical Metrics & Narrative -->
+<div class="lg:col-span-6 flex flex-col gap-space-md">
+<h3 class="font-headline-md text-headline-md text-on-surface tracking-tight">
+              High-Precision Context Retrieval &amp; Semantic Synthesis
+            </h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+              Architecting production-grade AI applications across enterprise code repositories. Eliminating hallucination vectors through chunking algorithms and rerankers.
+            </p>
+<div class="grid grid-cols-2 gap-space-md pt-space-xs">
+<div class="p-space-md bg-surface-container-high rounded-lg">
+<span class="font-label-sm text-label-sm text-outline uppercase block">Context Windows</span>
+<span class="font-headline-sm text-headline-sm text-secondary">128K Tokens</span>
+<span class="font-body-sm text-body-sm text-outline block mt-1">Chunk hybrid overlap</span>
+</div>
+<div class="p-space-md bg-surface-container-high rounded-lg">
+<span class="font-label-sm text-label-sm text-outline uppercase block">Retrieval Accuracy</span>
+<span class="font-headline-sm text-headline-sm text-tertiary">99.1% F1</span>
+<span class="font-body-sm text-body-sm text-outline block mt-1">Benchmarked on internal repos</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ==========================================
+       SECTION 7: SKILLS AS A TACTILE SCULPTURE
+       ========================================== -->
+<section class="relative w-full py-space-xl px-margin-mobile md:px-margin bg-surface" id="tech-sculpture">
+<div class="max-w-7xl mx-auto flex flex-col gap-space-xl">
+<!-- Section Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-sm text-label-sm text-secondary bg-surface-container px-space-sm py-1 rounded">INSTRUMENTATION</span>
+<span class="font-label-sm text-label-sm text-outline tracking-wider uppercase">Interactive Array</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Tactile Branching Armature</h2>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">
+          A physical taxonomy of engineering capabilities. Blown-glass sphere nodes suspended on brass branching joints.
+        </p>
+</div>
+<!-- Interactive Skill Sculpture Array -->
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-space-md">
+<!-- Node 1: Next.js / React -->
+<div class="group p-space-md bg-surface-container hover:bg-surface-container-high transition-colors rounded-xl shadow-[0_12px_28px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col justify-between h-44 cursor-pointer">
+<div class="flex items-center justify-between">
+<div class="w-8 h-8 rounded-full bg-surface-container-lowest flex items-center justify-center shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary group-hover:scale-125 transition-transform shadow-[0_0_8px_#ffb86c]"></span>
+</div>
+<span class="font-label-sm text-label-sm text-outline group-hover:text-secondary transition-colors">NODE_01</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface block">Next.js &amp; React</span>
+<span class="font-label-sm text-label-sm text-secondary mt-1 block">Used in 14 projects</span>
+</div>
+</div>
+<!-- Node 2: Node.js & TypeScript -->
+<div class="group p-space-md bg-surface-container hover:bg-surface-container-high transition-colors rounded-xl shadow-[0_12px_28px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col justify-between h-44 cursor-pointer">
+<div class="flex items-center justify-between">
+<div class="w-8 h-8 rounded-full bg-surface-container-lowest flex items-center justify-center shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary group-hover:scale-125 transition-transform shadow-[0_0_8px_#e9c349]"></span>
+</div>
+<span class="font-label-sm text-label-sm text-outline group-hover:text-tertiary transition-colors">NODE_02</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface block">Node.js &amp; TS</span>
+<span class="font-label-sm text-label-sm text-tertiary mt-1 block">Used in 18 projects</span>
+</div>
+</div>
+<!-- Node 3: Python & FastAPI -->
+<div class="group p-space-md bg-surface-container hover:bg-surface-container-high transition-colors rounded-xl shadow-[0_12px_28px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col justify-between h-44 cursor-pointer">
+<div class="flex items-center justify-between">
+<div class="w-8 h-8 rounded-full bg-surface-container-lowest flex items-center justify-center shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
+<span class="w-2.5 h-2.5 rounded-full bg-primary group-hover:scale-125 transition-transform shadow-[0_0_8px_#ffb59a]"></span>
+</div>
+<span class="font-label-sm text-label-sm text-outline group-hover:text-primary transition-colors">NODE_03</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface block">Python / FastAPI</span>
+<span class="font-label-sm text-label-sm text-primary mt-1 block">Used in 9 projects</span>
+</div>
+</div>
+<!-- Node 4: WebGL & Three.js -->
+<div class="group p-space-md bg-surface-container hover:bg-surface-container-high transition-colors rounded-xl shadow-[0_12px_28px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col justify-between h-44 cursor-pointer">
+<div class="flex items-center justify-between">
+<div class="w-8 h-8 rounded-full bg-surface-container-lowest flex items-center justify-center shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary group-hover:scale-125 transition-transform shadow-[0_0_8px_#ffb86c]"></span>
+</div>
+<span class="font-label-sm text-label-sm text-outline group-hover:text-secondary transition-colors">NODE_04</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface block">WebGL / Three.js</span>
+<span class="font-label-sm text-label-sm text-secondary mt-1 block">Used in 8 projects</span>
+</div>
+</div>
+<!-- Node 5: Vector RAG Pipelines -->
+<div class="group p-space-md bg-surface-container hover:bg-surface-container-high transition-colors rounded-xl shadow-[0_12px_28px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col justify-between h-44 cursor-pointer">
+<div class="flex items-center justify-between">
+<div class="w-8 h-8 rounded-full bg-surface-container-lowest flex items-center justify-center shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary group-hover:scale-125 transition-transform shadow-[0_0_8px_#e9c349]"></span>
+</div>
+<span class="font-label-sm text-label-sm text-outline group-hover:text-tertiary transition-colors">NODE_05</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface block">RAG Architecture</span>
+<span class="font-label-sm text-label-sm text-tertiary mt-1 block">Used in 6 projects</span>
+</div>
+</div>
+<!-- Node 6: PHP & Laravel -->
+<div class="group p-space-md bg-surface-container hover:bg-surface-container-high transition-colors rounded-xl shadow-[0_12px_28px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col justify-between h-44 cursor-pointer">
+<div class="flex items-center justify-between">
+<div class="w-8 h-8 rounded-full bg-surface-container-lowest flex items-center justify-center shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container group-hover:scale-125 transition-transform shadow-[0_0_8px_#dc744a]"></span>
+</div>
+<span class="font-label-sm text-label-sm text-outline group-hover:text-primary transition-colors">NODE_06</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface block">PHP &amp; Laravel</span>
+<span class="font-label-sm text-label-sm text-primary mt-1 block">Used in 11 projects</span>
+</div>
+</div>
+<!-- Node 7: Embedded IoT / ESP8266 -->
+<div class="group p-space-md bg-surface-container hover:bg-surface-container-high transition-colors rounded-xl shadow-[0_12px_28px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col justify-between h-44 cursor-pointer">
+<div class="flex items-center justify-between">
+<div class="w-8 h-8 rounded-full bg-surface-container-lowest flex items-center justify-center shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary group-hover:scale-125 transition-transform shadow-[0_0_8px_#ffb86c]"></span>
+</div>
+<span class="font-label-sm text-label-sm text-outline group-hover:text-secondary transition-colors">NODE_07</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface block">Embedded IoT</span>
+<span class="font-label-sm text-label-sm text-secondary mt-1 block">Used in 5 projects</span>
+</div>
+</div>
+<!-- Node 8: PostgreSQL & Vector DBs -->
+<div class="group p-space-md bg-surface-container hover:bg-surface-container-high transition-colors rounded-xl shadow-[0_12px_28px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.06)] flex flex-col justify-between h-44 cursor-pointer">
+<div class="flex items-center justify-between">
+<div class="w-8 h-8 rounded-full bg-surface-container-lowest flex items-center justify-center shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary group-hover:scale-125 transition-transform shadow-[0_0_8px_#e9c349]"></span>
+</div>
+<span class="font-label-sm text-label-sm text-outline group-hover:text-tertiary transition-colors">NODE_08</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm text-on-surface block">PostgreSQL / Qdrant</span>
+<span class="font-label-sm text-label-sm text-tertiary mt-1 block">Used in 12 projects</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ==========================================
+       SECTION 8: SELECTED WORKS (Frosted Glass Slabs)
+       ========================================== -->
+<section class="relative w-full py-space-xl px-margin-mobile md:px-margin bg-surface-container-lowest" id="selected-works">
+<div class="max-w-7xl mx-auto flex flex-col gap-space-xl">
+<!-- Section Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-sm text-label-sm text-secondary bg-surface-container px-space-sm py-1 rounded">PROJECTS</span>
+<span class="font-label-sm text-label-sm text-outline tracking-wider uppercase">Selected Works</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Selected Works</h2>
+</div>
+<span class="font-label-sm text-label-sm text-outline">03 FLAGSHIP ARTIFACTS</span>
+</div>
+
+<!-- ===== LATEST & GREATEST: the 3 newest, most important projects ===== -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">Latest &amp; Most Important — start here</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-space-lg">
+<!-- LATEST 1: Repo Scanner -->
+<div class="group bg-gradient-to-b from-surface-container-high to-surface-container rounded-xl p-space-md flex flex-col justify-between shadow-[0_28px_60px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,184,108,0.35)] ring-1 ring-secondary/30 relative">
+<span class="absolute -top-3 left-space-md bg-secondary text-on-secondary font-label-sm text-label-sm uppercase tracking-widest px-space-sm py-0.5 rounded-full shadow-[0_4px_12px_rgba(245,160,58,0.5)]">Newest · 2026</span>
+<div class="mt-space-sm">
+<div class="flex items-center gap-space-xs font-label-sm text-label-sm text-outline mb-1">
+<span>AI / RAG</span><span>·</span><span>2026</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Repo Scanner</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-space-xs">
+              Clones any public Git repo, indexes its functions, classes and call relationships, and answers natural-language questions about the codebase using RAG.
+            </p>
+<div class="flex flex-wrap gap-space-xs mt-space-sm">
+<span class="font-label-sm text-label-sm text-tertiary bg-surface-container-lowest/80 px-space-xs py-0.5 rounded">Next.js</span>
+<span class="font-label-sm text-label-sm text-tertiary bg-surface-container-lowest/80 px-space-xs py-0.5 rounded">FastAPI</span>
+<span class="font-label-sm text-label-sm text-tertiary bg-surface-container-lowest/80 px-space-xs py-0.5 rounded">ChromaDB</span>
+<span class="font-label-sm text-label-sm text-tertiary bg-surface-container-lowest/80 px-space-xs py-0.5 rounded">Gemini</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm pt-space-md mt-space-md">
+<button class="flex-1 py-space-xs px-space-sm bg-primary-container text-on-primary font-label-sm text-label-sm uppercase rounded tracking-wider shadow-[0_4px_12px_rgba(220,116,74,0.3),inset_0_1px_0_rgba(255,255,255,0.3)] hover:brightness-110 active:translate-y-0.5">Live Preview</button>
+<button class="py-space-xs px-space-sm bg-surface-container-high text-on-surface font-label-sm text-label-sm uppercase rounded tracking-wider hover:text-secondary">GitHub</button>
+</div>
+</div>
+<!-- LATEST 2: frshly (npm package) -->
+<div class="group bg-gradient-to-b from-surface-container-high to-surface-container rounded-xl p-space-md flex flex-col justify-between shadow-[0_28px_60px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,184,108,0.35)] ring-1 ring-secondary/30 relative">
+<span class="absolute -top-3 left-space-md bg-secondary text-on-secondary font-label-sm text-label-sm uppercase tracking-widest px-space-sm py-0.5 rounded-full shadow-[0_4px_12px_rgba(245,160,58,0.5)]">Published on npm</span>
+<div class="mt-space-sm">
+<div class="flex items-center gap-space-xs font-label-sm text-label-sm text-outline mb-1">
+<span>OPEN SOURCE TOOLING</span><span>·</span><span>2026</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">frshly</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-space-xs">
+              A published npm package that detects when a new build of a React SPA is deployed and auto-refreshes open tabs — no more stale JS, no more asking users to hard-refresh. Drop-in plugin for Vite, Webpack and CRACO.
+            </p>
+<div class="bg-surface-container-lowest rounded px-space-sm py-space-xs mt-space-sm font-label-sm text-label-sm text-tertiary">npm i frshly</div>
+</div>
+<div class="flex items-center gap-space-sm pt-space-md mt-space-md">
+<a class="flex-1 text-center py-space-xs px-space-sm bg-primary-container text-on-primary font-label-sm text-label-sm uppercase rounded tracking-wider shadow-[0_4px_12px_rgba(220,116,74,0.3),inset_0_1px_0_rgba(255,255,255,0.3)] hover:brightness-110 active:translate-y-0.5" href="https://www.npmjs.com/package/frshly" rel="noopener" target="_blank">View on npm</a>
+<a class="py-space-xs px-space-sm bg-surface-container-high text-on-surface font-label-sm text-label-sm uppercase rounded tracking-wider hover:text-secondary" href="https://github.com/THUNDERSAMA/freshly" rel="noopener" target="_blank">GitHub</a>
+</div>
+</div>
+<!-- LATEST 3: RxKeep (cross-referenced from Stage 03 above) -->
+<div class="group bg-gradient-to-b from-surface-container-high to-surface-container rounded-xl p-space-md flex flex-col justify-between shadow-[0_28px_60px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,184,108,0.35)] ring-1 ring-secondary/30 relative">
+<span class="absolute -top-3 left-space-md bg-secondary text-on-secondary font-label-sm text-label-sm uppercase tracking-widest px-space-sm py-0.5 rounded-full shadow-[0_4px_12px_rgba(245,160,58,0.5)]">Flagship · 2024</span>
+<div class="mt-space-sm">
+<div class="flex items-center gap-space-xs font-label-sm text-label-sm text-outline mb-1">
+<span>BLOCKCHAIN / HEALTH</span><span>·</span><span>2024</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">RxKeep</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-space-xs">
+              Blockchain-based prescription management, integrating IPFS with a centralized medical database — accessible even to patients without smartphones. See the full case study below in Stage 03.
+            </p>
+<div class="flex flex-wrap gap-space-xs mt-space-sm">
+<span class="font-label-sm text-label-sm text-tertiary bg-surface-container-lowest/80 px-space-xs py-0.5 rounded">Next.js</span>
+<span class="font-label-sm text-label-sm text-tertiary bg-surface-container-lowest/80 px-space-xs py-0.5 rounded">OpenCV</span>
+<span class="font-label-sm text-label-sm text-tertiary bg-surface-container-lowest/80 px-space-xs py-0.5 rounded">GraphQL</span>
+<span class="font-label-sm text-label-sm text-tertiary bg-surface-container-lowest/80 px-space-xs py-0.5 rounded">OCR</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm pt-space-md mt-space-md">
+<a class="flex-1 text-center py-space-xs px-space-sm bg-surface-container-high text-on-surface font-label-sm text-label-sm uppercase rounded tracking-wider hover:text-secondary" href="#story">Jump to case study ↑</a>
+<button class="py-space-xs px-space-sm bg-surface-container-high text-on-surface font-label-sm text-label-sm uppercase rounded tracking-wider hover:text-secondary">GitHub</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="h-px bg-surface-variant w-full my-space-sm"></div>
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-widest">More from the archive</span>
+<!-- 3 Glass Slab Projects -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-space-lg">
+<!-- Slab A: RAG Enterprise Search Engine -->
+<div class="group bg-surface-container/90 backdrop-blur-xl rounded-xl p-space-md flex flex-col justify-between shadow-[0_24px_50px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,184,108,0.25)] hover:shadow-[0_28px_60px_rgba(245,160,58,0.15)] transition-all">
+<div>
+<!-- Image Vignette Placeholder -->
+<div class="w-full aspect-video rounded-lg overflow-hidden relative mb-space-md bg-surface-container-lowest">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Tactile 3D render of an optical glass prism refracting a warm saffron light beam into subtle multi-colored spectral bands across a brushed dark metal plate. Dark indigo background with high-precision engineering coordinates etched in gold." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiENRkgaVcq7D7NudCxVD9I--wl8zOs_D-O4jFaYHRsGCDB4m8jLDop6WeVPop-k78iQxaZZAt1KOduPL4R7jK1PbBpwJERGjY7MdCZGT9aDXpn3IAUmM2TGlAp7x-loUqWW8I2egwLnz3wofxwodERTPQLEqYauXdSZjF_zVtriEU3hBphOe26p7RfD1sOhOYv-CIe7byQcfG0kIxOIj5oRjr2s7Xz-fyTg5oHU4l0FZxhdK4czCk"/>
+<div class="absolute top-2 right-2 bg-surface-container-lowest/80 px-space-xs py-0.5 rounded font-label-sm text-label-sm text-secondary">
+                AI / RAG
+              </div>
+</div>
+<div class="flex items-center gap-space-xs font-label-sm text-label-sm text-outline mb-1">
+<span>LTIMINDTREE</span>
+<span>·</span>
+<span>2025</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">RAG Enterprise Search</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-space-xs">
+              Contextual code indexing engine querying multi-gigabyte repositories via hybrid dense-sparse vectors with sub-second citations.
+            </p>
+</div>
+<!-- Dual Button Tactile Controls -->
+<div class="flex items-center gap-space-sm pt-space-md mt-space-md">
+<button class="flex-1 py-space-xs px-space-sm bg-primary-container text-on-primary font-label-sm text-label-sm uppercase rounded tracking-wider shadow-[0_4px_12px_rgba(220,116,74,0.3),inset_0_1px_0_rgba(255,255,255,0.3)] hover:brightness-110 active:translate-y-0.5">
+              Live Preview
+            </button>
+<button class="py-space-xs px-space-sm bg-surface-container-high text-on-surface font-label-sm text-label-sm uppercase rounded tracking-wider hover:text-secondary">
+              GitHub
+            </button>
+</div>
+</div>
+<!-- Slab B: IoT Biometric Access Node -->
+<div class="group bg-surface-container/90 backdrop-blur-xl rounded-xl p-space-md flex flex-col justify-between shadow-[0_24px_50px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,184,108,0.25)] hover:shadow-[0_28px_60px_rgba(245,160,58,0.15)] transition-all">
+<div>
+<!-- Image Vignette Placeholder -->
+<div class="w-full aspect-video rounded-lg overflow-hidden relative mb-space-md bg-surface-container-lowest">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Tactile 3D closeup render of a matte-green ESP8266 circuit board with precision gold-plated pin headers and an illuminated biometric fingerprint sensor scanning head casting an amber glow. Deep obsidian ceramic background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVNPSciXpWuveiyRd8DbAO0cl4G-7pnJicD0nC4eX8Os-DWNUgRmH12TxZC8vVsS9CkATRt6gUgBjXT-RtuqpFD3RnlGeqYQ_Sm5_K-LzKCGIcpLwxQ87MdU6AhphCKTeZos5lyKoO9d5P_cv1RBDu1pLO1AizbLlC8XMX_9gmiam_FYenMbIeTnrBG-SyXDY05Lf9iAFrusdnVshujJVw52BNsrvUqqcpYuoNrzY2BivlKBLnctE9"/>
+<div class="absolute top-2 right-2 bg-surface-container-lowest/80 px-space-xs py-0.5 rounded font-label-sm text-label-sm text-tertiary">
+                HARDWARE / C++
+              </div>
+</div>
+<div class="flex items-center gap-space-xs font-label-sm text-label-sm text-outline mb-1">
+<span>KRITANJ AWARD</span>
+<span>·</span>
+<span>2023</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">IoT Biometric Access Node <span class="text-secondary">(Biometric Attendance System)</span></h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-space-xs">
+              Hardware attendance scanner featuring local hash verification, captive WiFi captive portal, and automated fallback failover.
+            </p>
+</div>
+<!-- Dual Button Tactile Controls -->
+<div class="flex items-center gap-space-sm pt-space-md mt-space-md">
+<button class="flex-1 py-space-xs px-space-sm bg-primary-container text-on-primary font-label-sm text-label-sm uppercase rounded tracking-wider shadow-[0_4px_12px_rgba(220,116,74,0.3),inset_0_1px_0_rgba(255,255,255,0.3)] hover:brightness-110 active:translate-y-0.5">
+              Live Preview
+            </button>
+<button class="py-space-xs px-space-sm bg-surface-container-high text-on-surface font-label-sm text-label-sm uppercase rounded tracking-wider hover:text-secondary">
+              GitHub
+            </button>
+</div>
+</div>
+<!-- Slab C: Bengali Knowledge Graph & Quora -->
+<div class="group bg-surface-container/90 backdrop-blur-xl rounded-xl p-space-md flex flex-col justify-between shadow-[0_24px_50px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,184,108,0.25)] hover:shadow-[0_28px_60px_rgba(245,160,58,0.15)] transition-all">
+<div>
+<!-- Image Vignette Placeholder -->
+<div class="w-full aspect-video rounded-lg overflow-hidden relative mb-space-md bg-surface-container-lowest">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Tactile 3D render of carved wooden Bengali letterpress movable type blocks arranged in an open composition with warm directional side lighting creating deep physical contact shadows on a dark slate canvas." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxIzqdW5CSLoah8_4dLL58p_pwvObotVzA-LHqgMTb9StFwCQy0mnDWX4hWEGrszE76bq_02PlmYjaU_kqN9PSyeZNINsVXgSm91m8XVyfpDuLepOqPRhdbVIn6EgXgybKSBIVb2qDvhckY06UNl_Gc8K01Q0-iJjN9dOOhn3KgL-R7TxxSEyEcMaHWo2nr3GkuewXtzNJFvjb0ZsMGGyYJ8T61Pwst4PmG1qE_wgxTrzxaEHC61UQ"/>
+<div class="absolute top-2 right-2 bg-surface-container-lowest/80 px-space-xs py-0.5 rounded font-label-sm text-label-sm text-secondary">
+                FULLSTACK / NLP
+              </div>
+</div>
+<div class="flex items-center gap-space-xs font-label-sm text-label-sm text-outline mb-1">
+<span>COMMUNITY</span>
+<span>·</span>
+<span>2021</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Bengali Knowledge Portal <span class="text-secondary">(Bongnity)</span></h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-space-xs">
+              Algorithmic discovery engine and forum platform engineered to empower native language discourse and technical education.
+            </p>
+</div>
+<!-- Dual Button Tactile Controls -->
+<div class="flex items-center gap-space-sm pt-space-md mt-space-md">
+<button class="flex-1 py-space-xs px-space-sm bg-primary-container text-on-primary font-label-sm text-label-sm uppercase rounded tracking-wider shadow-[0_4px_12px_rgba(220,116,74,0.3),inset_0_1px_0_rgba(255,255,255,0.3)] hover:brightness-110 active:translate-y-0.5">
+              Live Preview
+            </button>
+<button class="py-space-xs px-space-sm bg-surface-container-high text-on-surface font-label-sm text-label-sm uppercase rounded tracking-wider hover:text-secondary">
+              GitHub
+            </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ==========================================
+       SECTION 8.5: THE LAB — TOOLS & GAMES
+       ========================================== -->
+<section class="relative w-full py-space-xl px-margin-mobile md:px-margin bg-surface-container-lowest overflow-hidden" id="tools-games">
+<div class="max-w-7xl mx-auto flex flex-col gap-space-xl">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md reveal-box">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-sm text-label-sm text-secondary bg-surface-container px-space-sm py-1 rounded">PHASE 06</span>
+<span class="font-label-sm text-label-sm text-outline tracking-wider uppercase">Interactive Sandbox</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">The Lab — Tools &amp; Games</h2>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">Small, real, working utilities and games built to poke at logic, cubes, encodings and bugs. Click any tile to open it.</p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-space-lg">
+<!-- Base64 -->
+<div class="lab-card reveal-box lid bg-surface-container/90 backdrop-blur-xl rounded-xl p-space-lg flex flex-col gap-space-sm shadow-[0_24px_50px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,184,108,0.2)] hover:shadow-[0_28px_60px_rgba(245,160,58,0.15)] transition-all" data-tool="base64">
+<span class="material-symbols-outlined text-secondary text-3xl">data_object</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Base64 Encoder / Decoder</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Type or paste text and flip it between plain text and Base64, live.</p>
+<span class="font-label-sm text-label-sm text-tertiary uppercase tracking-widest mt-auto">Open Tool →</span>
+</div>
+<!-- Karnaugh -->
+<div class="lab-card reveal-box lid bg-surface-container/90 backdrop-blur-xl rounded-xl p-space-lg flex flex-col gap-space-sm shadow-[0_24px_50px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,184,108,0.2)] hover:shadow-[0_28px_60px_rgba(245,160,58,0.15)] transition-all" data-tool="kmap">
+<span class="material-symbols-outlined text-secondary text-3xl">grid_view</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Karnaugh Map Solver</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Click cells to set 0 / 1 / don't-care, then simplify to a minimal SOP expression (Quine–McCluskey).</p>
+<span class="font-label-sm text-label-sm text-tertiary uppercase tracking-widest mt-auto">Open Tool →</span>
+</div>
+<!-- Rubik's cube -->
+<div class="lab-card reveal-box lid bg-surface-container/90 backdrop-blur-xl rounded-xl p-space-lg flex flex-col gap-space-sm shadow-[0_24px_50px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,184,108,0.2)] hover:shadow-[0_28px_60px_rgba(245,160,58,0.15)] transition-all" data-tool="cube">
+<span class="material-symbols-outlined text-secondary text-3xl">view_in_ar</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Rubik's Cube Simulator</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Turn any face, scramble it, then hit Solve — it unwinds your exact scramble move-by-move.</p>
+<span class="font-label-sm text-label-sm text-tertiary uppercase tracking-widest mt-auto">Open Tool →</span>
+</div>
+<!-- Ludo -->
+<div class="lab-card reveal-box lid bg-surface-container/90 backdrop-blur-xl rounded-xl p-space-lg flex flex-col gap-space-sm shadow-[0_24px_50px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,184,108,0.2)] hover:shadow-[0_28px_60px_rgba(245,160,58,0.15)] transition-all" data-tool="ludo">
+<span class="material-symbols-outlined text-secondary text-3xl">casino</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Ludo Sprint</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">A quick 1v1 dice race against the CPU. First token to the end wins.</p>
+<span class="font-label-sm text-label-sm text-tertiary uppercase tracking-widest mt-auto">Play →</span>
+</div>
+<!-- Guess the bug -->
+<div class="lab-card reveal-box lid bg-surface-container/90 backdrop-blur-xl rounded-xl p-space-lg flex flex-col gap-space-sm shadow-[0_24px_50px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,184,108,0.2)] hover:shadow-[0_28px_60px_rgba(245,160,58,0.15)] transition-all" data-tool="bug">
+<span class="material-symbols-outlined text-secondary text-3xl">bug_report</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Guess the Bug</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Real broken snippets. Click the line that's wrong before the score runs out.</p>
+<span class="font-label-sm text-label-sm text-tertiary uppercase tracking-widest mt-auto">Play →</span>
+</div>
+<!-- Placeholder tile -->
+<div class="reveal-box lid bg-surface-container-high/60 rounded-xl p-space-lg flex flex-col items-center justify-center gap-space-xs text-center shadow-[inset_0_1px_2px_rgba(0,0,0,0.6)] border border-dashed border-outline-variant">
+<span class="material-symbols-outlined text-outline text-3xl">add_circle</span>
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-widest">More tools brewing</span>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ===== Shared Modal Shell for Lab Tools ===== -->
+<div id="toolModal">
+<div id="toolModalBackdrop"></div>
+<div id="toolModalPanel" class="bg-surface-container border border-surface-variant shadow-[0_40px_90px_rgba(0,0,0,0.9)]">
+<div class="flex items-center justify-between px-space-lg py-space-md border-b border-surface-variant sticky top-0 bg-surface-container/95 backdrop-blur-xl">
+<h3 id="toolModalTitle" class="font-headline-sm text-headline-sm text-on-surface">Tool</h3>
+<button id="toolModalClose" class="w-9 h-9 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface hover:text-secondary">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div id="toolModalBody" class="p-space-lg"></div>
+</div>
+</div>
+
+<!-- ==========================================
+       SECTION 9: FOOTER & CTA (Parked Taxi & Let's Build)
+       ========================================== -->
+<section class="relative w-full py-space-xl px-margin-mobile md:px-margin bg-surface overflow-hidden" id="contact">
+<!-- Ambient Underglow Bloom from Parked Taxi -->
+<div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-64 bg-secondary/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="max-w-7xl mx-auto flex flex-col items-center text-center relative z-10 gap-space-lg">
+<!-- Safe Parked Taxi Indicator -->
+<div class="flex items-center gap-space-sm bg-surface-container-high/80 px-space-md py-space-xs rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,0.8)]">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary shadow-[0_0_10px_#ffb86c]"></span>
+<span class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface">AMBASSADOR SAFELY PARKED · ENGINE IDLING</span>
+</div>
+<h2 class="font-display text-display text-on-surface tracking-tight max-w-3xl">
+        Let's build something <span class="text-transparent bg-clip-text bg-gradient-to-r from-secondary via-primary to-tertiary">extraordinary</span> together.
+      </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
+        Available for select architectural contracts, high-stakes interactive experiments, and forward-deployed AI engineering roles.
+      </p>
+<!-- Primary Action Buttons -->
+<div class="flex flex-wrap items-center justify-center gap-space-md pt-space-xs">
+<button class="px-space-xl py-space-sm bg-primary-container text-on-primary font-label-md text-label-md uppercase tracking-wider rounded-lg shadow-[0_12px_32px_rgba(220,116,74,0.4),inset_0_1px_0_rgba(255,255,255,0.4)] hover:shadow-[0_0_24px_rgba(245,160,58,0.5)] transition-all duration-200 active:translate-y-0.5 flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-lg">download</span>
+          Download Resume
+        </button>
+<a class="px-space-xl py-space-sm bg-surface-container-high text-on-surface font-label-md text-label-md uppercase tracking-wider rounded-lg shadow-[0_8px_20px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.08)] hover:text-secondary transition-colors flex items-center gap-space-xs" href="mailto:hello@samadritdas.dev">
+<span class="material-symbols-outlined text-lg">mail</span>
+          Get in Touch
+        </a>
+</div>
+<!-- Brushed Metal Social Token Badges -->
+<div class="flex items-center gap-space-md pt-space-lg">
+<a class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-on-surface hover:text-secondary shadow-[0_6px_16px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.08)] transition-transform hover:-translate-y-0.5" href="https://github.com" rel="noopener" target="_blank">
+<span class="font-label-md text-label-md font-bold">GH</span>
+</a>
+<a class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-on-surface hover:text-secondary shadow-[0_6px_16px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.08)] transition-transform hover:-translate-y-0.5" href="https://linkedin.com" rel="noopener" target="_blank">
+<span class="font-label-md text-label-md font-bold">IN</span>
+</a>
+<a class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-on-surface hover:text-secondary shadow-[0_6px_16px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.08)] transition-transform hover:-translate-y-0.5" href="mailto:contact@samadrit.com">
+<span class="material-symbols-outlined text-xl">send</span>
+</a>
+</div>
+<!-- Monospace Footnote Marker -->
+<div class="pt-space-md">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-widest">
+          Designed with physical devotion · Kolkata to the World
+        </span>
+</div>
+</div>
+</section>
+<!-- Interactive Client-side Script for Counters & Ripple Effects -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const counterEl = document.getElementById('counter-val');
+      if (counterEl) {
+        let current = 120000;
+        const target = 148500;
+        const step = 475;
+        const timer = setInterval(() => {
+          current += step;
+          if (current >= target) {
+            current = target;
+            clearInterval(timer);
+          }
+          counterEl.textContent = '₹ ' + current.toLocaleString('en-IN');
+        }, 30);
+      }
+    });
+  </script>
+
+  <!-- ============ SMOOTH SECTION TRANSITIONS ============ -->
+  <script>
+  (function(){
+    // Smooth section-to-section entrance (separate from per-card reveal-box)
+    var sections = document.querySelectorAll('main section');
+    var sectionIO = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add('section-visible');
+          sectionIO.unobserve(entry.target);
+        }
+      });
+    }, {threshold:0.08, rootMargin:'0px 0px -40px 0px'});
+    sections.forEach(function(s){ sectionIO.observe(s); });
+  })();
+  </script>
+
+  <!-- ============ SCROLL REVEAL + CURSOR GLOW ============ -->
+  <script>
+  (function(){
+    // Mark every section-level card/heading as a reveal-box (if not already tagged)
+    document.querySelectorAll('main section > div > div.grid > div, main section h2, main section > div > div.flex.flex-col.md\\:flex-row').forEach(function(el){
+      if(!el.classList.contains('reveal-box') && !el.closest('#toolModal')) el.classList.add('reveal-box');
+    });
+    var boxes = document.querySelectorAll('.reveal-box');
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry, i){
+        if(entry.isIntersecting){
+          entry.target.style.transitionDelay = (i % 6) * 80 + 'ms';
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, {threshold:0.15, rootMargin:'0px 0px -60px 0px'});
+    boxes.forEach(function(b){ io.observe(b); });
+
+    // Cursor glow trail (desktop only)
+    if(matchMedia('(pointer:fine)').matches){
+      var glow = document.createElement('div');
+      glow.id = 'cursor-glow';
+      document.body.appendChild(glow);
+      window.addEventListener('mousemove', function(e){
+        glow.style.opacity = '1';
+        glow.style.left = e.clientX + 'px';
+        glow.style.top = e.clientY + 'px';
+      });
+    }
+  })();
+  </script>
+
+  <!-- ============ THE LAB: MODAL SYSTEM + TOOLS/GAMES ============ -->
+  <script>
+  (function(){
+    var modal = document.getElementById('toolModal');
+    var titleEl = document.getElementById('toolModalTitle');
+    var bodyEl = document.getElementById('toolModalBody');
+
+    function openTool(name){
+      var cfg = TOOLS[name];
+      if(!cfg) return;
+      titleEl.textContent = cfg.title;
+      bodyEl.innerHTML = cfg.render();
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      if(cfg.init) cfg.init();
+    }
+    function closeTool(){
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+      bodyEl.innerHTML = '';
+    }
+    document.getElementById('toolModalClose').addEventListener('click', closeTool);
+    document.getElementById('toolModalBackdrop').addEventListener('click', closeTool);
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeTool(); });
+    document.querySelectorAll('.lab-card[data-tool]').forEach(function(card){
+      card.addEventListener('click', function(){ openTool(card.getAttribute('data-tool')); });
+    });
+
+    var TOOLS = {};
+
+    /* ---------- 1. BASE64 ENCODER / DECODER ---------- */
+    TOOLS.base64 = {
+      title: 'Base64 Encoder / Decoder',
+      render: function(){
+        return '\
+          <div class="flex flex-col gap-space-md">\
+            <textarea id="b64-in" rows="5" placeholder="Type or paste text here..." class="w-full bg-surface-container-lowest border border-surface-variant rounded-lg p-space-sm font-body-sm text-body-sm text-on-surface focus:outline-none focus:border-secondary"></textarea>\
+            <div class="flex gap-space-sm">\
+              <button id="b64-encode" class="flex-1 py-space-xs px-space-sm bg-primary-container text-on-primary font-label-sm text-label-sm uppercase rounded tracking-wider hover:brightness-110">Encode →</button>\
+              <button id="b64-decode" class="flex-1 py-space-xs px-space-sm bg-surface-container-high text-on-surface font-label-sm text-label-sm uppercase rounded tracking-wider hover:text-secondary">← Decode</button>\
+              <button id="b64-swap" class="py-space-xs px-space-sm bg-surface-container-high text-on-surface font-label-sm text-label-sm uppercase rounded tracking-wider hover:text-secondary">Swap</button>\
+            </div>\
+            <textarea id="b64-out" rows="5" readonly placeholder="Result appears here..." class="w-full bg-surface-container-lowest border border-surface-variant rounded-lg p-space-sm font-body-sm text-body-sm text-tertiary"></textarea>\
+            <span id="b64-err" class="font-label-sm text-label-sm text-error"></span>\
+          </div>';
+      },
+      init: function(){
+        var inp = document.getElementById('b64-in'), out = document.getElementById('b64-out'), err = document.getElementById('b64-err');
+        function utf8ToB64(str){ return btoa(unescape(encodeURIComponent(str))); }
+        function b64ToUtf8(str){ return decodeURIComponent(escape(atob(str))); }
+        document.getElementById('b64-encode').onclick = function(){
+          err.textContent=''; try{ out.value = utf8ToB64(inp.value); }catch(e){ err.textContent='Could not encode that input.'; }
+        };
+        document.getElementById('b64-decode').onclick = function(){
+          err.textContent=''; try{ out.value = b64ToUtf8(inp.value); }catch(e){ err.textContent='Not valid Base64.'; }
+        };
+        document.getElementById('b64-swap').onclick = function(){
+          var tmp = inp.value; inp.value = out.value; out.value = tmp;
+        };
+      }
+    };
+
+    /* ---------- 2. KARNAUGH MAP SOLVER (Quine–McCluskey) ---------- */
+    TOOLS.kmap = {
+      title: 'Karnaugh Map Solver',
+      render: function(){
+        return '\
+          <div class="flex flex-col gap-space-md">\
+            <div class="flex items-center gap-space-sm">\
+              <span class="font-label-sm text-label-sm text-outline uppercase">Variables:</span>\
+              <select id="km-vars" class="bg-surface-container-lowest border border-surface-variant rounded px-space-sm py-1 text-on-surface font-body-sm text-body-sm">\
+                <option value="2">2 (A,B)</option><option value="3" selected>3 (A,B,C)</option><option value="4">4 (A,B,C,D)</option>\
+              </select>\
+              <span class="font-label-sm text-label-sm text-outline">Click a cell to cycle 0 → 1 → X</span>\
+            </div>\
+            <div id="km-grid"></div>\
+            <button id="km-solve" class="py-space-xs px-space-sm bg-primary-container text-on-primary font-label-sm text-label-sm uppercase rounded tracking-wider hover:brightness-110 w-fit">Simplify →</button>\
+            <div id="km-result" class="font-display text-2xl text-secondary font-bold min-h-[2rem]"></div>\
+          </div>';
+      },
+      init: function(){
+        var gridEl = document.getElementById('km-grid'), varsSel = document.getElementById('km-vars'), resultEl = document.getElementById('km-result');
+        var state = {}; // minterm index -> '0'|'1'|'X'
+        var names = ['A','B','C','D'];
+
+        function buildGrid(n){
+          state = {};
+          gridEl.innerHTML = '';
+          var size = Math.pow(2, n);
+          for(var i=0;i<size;i++) state[i] = '0';
+          var grid = document.createElement('div');
+          grid.style.display = 'grid';
+          grid.style.gridTemplateColumns = 'repeat(' + Math.min(size, 8) + ', 1fr)';
+          grid.style.gap = '6px';
+          grid.style.maxWidth = '420px';
+          for(var m=0;m<size;m++){
+            var cell = document.createElement('div');
+            cell.className = 'kmap-cell';
+            cell.dataset.val = '0';
+            cell.dataset.m = m;
+            cell.textContent = m;
+            cell.title = 'minterm ' + m;
+            cell.onclick = (function(mm){ return function(){
+              var order = {'0':'1','1':'X','X':'0'};
+              var next = order[state[mm]];
+              state[mm] = next;
+              this.dataset.val = next;
+              this.textContent = next === 'X' ? 'X' : mm;
+            };})(m);
+            grid.appendChild(cell);
+          }
+          gridEl.appendChild(grid);
+          resultEl.textContent = '';
+        }
+        buildGrid(3);
+        varsSel.onchange = function(){ buildGrid(parseInt(varsSel.value,10)); };
+
+        function toBin(num, n){ return num.toString(2).padStart(n,'0'); }
+        function combine(a,b){
+          var diff=0, res='';
+          for(var i=0;i<a.length;i++){
+            if(a[i]!==b[i]){ diff++; res+='-'; } else res+=a[i];
+          }
+          return diff===1 ? res : null;
+        }
+        function quineMcCluskey(n, minterms){
+          if(minterms.length===0) return ['0'];
+          var groups = minterms.map(function(m){ return toBin(m,n); });
+          var primeImplicants = new Set();
+          var current = groups.slice();
+          var used = new Set();
+          var changed = true;
+          while(current.length){
+            var next = [];
+            var combinedFlags = new Array(current.length).fill(false);
+            for(var i=0;i<current.length;i++){
+              for(var j=i+1;j<current.length;j++){
+                var c = combine(current[i], current[j]);
+                if(c){
+                  combinedFlags[i]=true; combinedFlags[j]=true;
+                  if(next.indexOf(c)===-1) next.push(c);
+                }
+              }
+            }
+            for(var k=0;k<current.length;k++){
+              if(!combinedFlags[k]) primeImplicants.add(current[k]);
+            }
+            if(next.length===0) break;
+            current = next;
+          }
+          if(current.length && current !== groups) current.forEach(function(c){ primeImplicants.add(c); });
+          return Array.from(primeImplicants);
+        }
+        function implicantCoversMinterm(imp, m, n){
+          var mb = toBin(m,n);
+          for(var i=0;i<n;i++){ if(imp[i]!=='-' && imp[i]!==mb[i]) return false; }
+          return true;
+        }
+        function toExpr(imp, n){
+          var vars = names.slice(0,n), out=[];
+          for(var i=0;i<n;i++){
+            if(imp[i]==='1') out.push(vars[i]);
+            else if(imp[i]==='0') out.push(vars[i]+"'");
+          }
+          return out.length ? out.join('') : '1';
+        }
+
+        document.getElementById('km-solve').onclick = function(){
+          var n = parseInt(varsSel.value,10);
+          var ones = [], dontcares = [];
+          Object.keys(state).forEach(function(k){
+            if(state[k]==='1') ones.push(parseInt(k,10));
+            else if(state[k]==='X') dontcares.push(parseInt(k,10));
+          });
+          if(ones.length===0){ resultEl.textContent = 'F = 0'; return; }
+          var allTerms = ones.concat(dontcares);
+          var pis = quineMcCluskey(n, allTerms);
+          // Essential prime implicant selection covering only the true 1s (greedy set cover)
+          var uncovered = ones.slice();
+          var chosen = [];
+          while(uncovered.length){
+            var best=null, bestCover=[];
+            pis.forEach(function(pi){
+              var cover = uncovered.filter(function(m){ return implicantCoversMinterm(pi,m,n); });
+              if(cover.length > bestCover.length){ best=pi; bestCover=cover; }
+            });
+            if(!best) break;
+            chosen.push(best);
+            uncovered = uncovered.filter(function(m){ return bestCover.indexOf(m)===-1; });
+          }
+          var expr = chosen.map(function(c){ return toExpr(c,n); }).join(' + ');
+          resultEl.textContent = 'F = ' + expr;
+        };
+      }
+    };
+
+    /* ---------- 3. RUBIK'S CUBE SIMULATOR (net view + move-history solve) ---------- */
+    TOOLS.cube = {
+      title: "Rubik's Cube Simulator",
+      render: function(){
+        return '\
+          <div class="flex flex-col gap-space-md items-center">\
+            <div id="cube-net" class="cube-net"></div>\
+            <div class="flex flex-wrap gap-space-xs justify-center">\
+              ' + ['U',"U'",'D',"D'",'L',"L'",'R',"R'",'F',"F'",'B',"B'"].map(function(m){
+                return '<button class="cube-move py-1 px-space-sm bg-surface-container-high text-on-surface font-label-sm text-label-sm rounded hover:text-secondary" data-m="'+m+'">'+m+'</button>';
+              }).join('') + '\
+            </div>\
+            <div class="flex gap-space-sm">\
+              <button id="cube-scramble" class="py-space-xs px-space-sm bg-surface-container-high text-on-surface font-label-sm text-label-sm uppercase rounded tracking-wider hover:text-secondary">Scramble</button>\
+              <button id="cube-solve" class="py-space-xs px-space-sm bg-primary-container text-on-primary font-label-sm text-label-sm uppercase rounded tracking-wider hover:brightness-110">Solve</button>\
+              <button id="cube-reset" class="py-space-xs px-space-sm bg-surface-container-high text-on-surface font-label-sm text-label-sm uppercase rounded tracking-wider hover:text-secondary">Reset</button>\
+            </div>\
+            <span class="font-label-sm text-label-sm text-outline text-center max-w-md">Solve unwinds the exact scramble you made, move-by-move — a practical demo solver, not a general CFOP engine.</span>\
+            <span id="cube-log" class="font-label-sm text-label-sm text-tertiary"></span>\
+          </div>';
+      },
+      init: function(){
+        var COLORS = {U:'#ffffff',D:'#e9c349',L:'#dc744a',R:'#ffb86c',F:'#7dd3a0',B:'#6ea8ff'};
+        var faces = ['U','L','F','R','B','D'];
+        var state, history=[];
+        function fresh(){
+          state = {};
+          faces.forEach(function(f){ state[f] = new Array(9).fill(f); });
+        }
+        fresh();
+        var netEl = document.getElementById('cube-net');
+        // 4x3 unfolded cross layout positions
+        var layout = {U:[1,0],L:[0,1],F:[1,1],R:[2,1],B:[3,1],D:[1,2]};
+        function render(){
+          netEl.innerHTML = '';
+          for(var r=0;r<3;r++){
+            for(var c=0;c<4;c++){
+              var slot = document.createElement('div');
+              var faceHere = Object.keys(layout).find(function(f){ return layout[f][0]===c && layout[f][1]===r; });
+              if(faceHere){
+                var faceDiv = document.createElement('div');
+                faceDiv.className = 'cube-face';
+                state[faceHere].forEach(function(sticker){
+                  var s = document.createElement('div');
+                  s.className = 'cube-sticker';
+                  s.style.background = COLORS[sticker];
+                  faceDiv.appendChild(s);
+                });
+                slot.appendChild(faceDiv);
+              }
+              netEl.appendChild(slot);
+            }
+          }
+        }
+        // Standard 3x3 sticker rotation model
+        function rotFace(f, ccw){
+          var s = state[f].slice();
+          var idx = ccw ? [2,5,8,1,4,7,0,3,6] : [6,3,0,7,4,1,8,5,2];
+          state[f] = idx.map(function(i){ return s[i]; });
+        }
+        var EDGE_CYCLES = {
+          U: [['F',0,1,2],['R',0,1,2],['B',0,1,2],['L',0,1,2]],
+          D: [['F',6,7,8],['L',6,7,8],['B',6,7,8],['R',6,7,8]],
+          F: [['U',6,7,8],['R',0,3,6],['D',2,1,0],['L',8,5,2]],
+          B: [['U',2,1,0],['L',0,3,6],['D',6,7,8],['R',8,5,2]],
+          L: [['U',0,3,6],['F',0,3,6],['D',0,3,6],['B',8,5,2]],
+          R: [['U',8,5,2],['B',0,3,6],['D',8,5,2],['F',8,5,2]]
+        };
+        function move(m){
+          var face = m[0], ccw = m.length>1 && m[1]==="'";
+          rotFace(face, ccw);
+          var cyc = EDGE_CYCLES[face];
+          var order = ccw ? [3,0,1,2] : [1,2,3,0];
+          var snapshot = cyc.map(function(part){ return [state[part[0]][part[1]], state[part[0]][part[2]], state[part[0]][part[3]]]; });
+          var newVals = order.map(function(oi){ return snapshot[oi]; });
+          for(var i=0;i<4;i++){
+            state[cyc[i][0]][cyc[i][1]] = newVals[i][0];
+            state[cyc[i][0]][cyc[i][2]] = newVals[i][1];
+            state[cyc[i][0]][cyc[i][3]] = newVals[i][2];
+          }
+          render();
+        }
+        function opposite(m){ return m.length>1 ? m[0] : m+"'"; }
+        render();
+        document.querySelectorAll('.cube-move').forEach(function(btn){
+          btn.onclick = function(){ var m=btn.dataset.m; move(m); history.push(m); log(''); };
+        });
+        function log(t){ document.getElementById('cube-log').textContent = t; }
+        document.getElementById('cube-scramble').onclick = function(){
+          fresh(); history = [];
+          var moves = ['U',"U'",'D',"D'",'L',"L'",'R',"R'",'F',"F'",'B',"B'"];
+          for(var i=0;i<16;i++){
+            var m = moves[Math.floor(Math.random()*moves.length)];
+            move(m); history.push(m);
+          }
+          log('Scrambled with ' + history.length + ' moves.');
+        };
+        document.getElementById('cube-solve').onclick = function(){
+          if(!history.length){ log('Nothing to solve — scramble it first.'); return; }
+          var steps = history.slice().reverse().map(opposite);
+          var i = 0;
+          var timer = setInterval(function(){
+            if(i>=steps.length){ clearInterval(timer); history=[]; log('Solved! Back to a clean state.'); return; }
+            move(steps[i]); i++;
+          }, 140);
+        };
+        document.getElementById('cube-reset').onclick = function(){ fresh(); history=[]; render(); log('Reset to solved state.'); };
+      }
+    };
+
+    /* ---------- 4. LUDO SPRINT (simplified 1v1 dice race) ---------- */
+    TOOLS.ludo = {
+      title: 'Ludo Sprint',
+      render: function(){
+        return '\
+          <div class="flex flex-col gap-space-md">\
+            <div class="ludo-track" id="ludo-track"></div>\
+            <div class="flex items-center justify-between">\
+              <div class="flex items-center gap-space-sm">\
+                <span id="ludo-dice" class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center font-display text-2xl text-secondary">?</span>\
+                <button id="ludo-roll" class="py-space-xs px-space-md bg-primary-container text-on-primary font-label-sm text-label-sm uppercase rounded tracking-wider hover:brightness-110">Roll Dice</button>\
+              </div>\
+              <span id="ludo-status" class="font-label-sm text-label-sm text-outline uppercase tracking-widest">Your turn</span>\
+            </div>\
+          </div>';
+      },
+      init: function(){
+        var TRACK_LEN = 24;
+        var trackEl = document.getElementById('ludo-track');
+        var pos = {you:0, cpu:0};
+        for(var i=0;i<TRACK_LEN;i++){
+          var c = document.createElement('div');
+          c.className = 'ludo-cell';
+          c.style.left = (i/TRACK_LEN*100) + '%';
+          trackEl.appendChild(c);
+        }
+        var youT = document.createElement('div'); youT.className='ludo-token'; youT.style.background='#ffb86c'; youT.style.top='30%'; youT.textContent='Y';
+        var cpuT = document.createElement('div'); cpuT.className='ludo-token'; cpuT.style.background='#6ea8ff'; cpuT.style.top='70%'; cpuT.textContent='C';
+        trackEl.appendChild(youT); trackEl.appendChild(cpuT);
+        function place(){
+          youT.style.left = (pos.you/TRACK_LEN*100) + '%';
+          cpuT.style.left = (pos.cpu/TRACK_LEN*100) + '%';
+        }
+        place();
+        var over = false;
+        var diceEl = document.getElementById('ludo-dice'), statusEl = document.getElementById('ludo-status'), rollBtn = document.getElementById('ludo-roll');
+        function cpuTurn(){
+          setTimeout(function(){
+            var r = 1+Math.floor(Math.random()*6);
+            pos.cpu = Math.min(TRACK_LEN, pos.cpu+r);
+            place();
+            if(pos.cpu>=TRACK_LEN){ statusEl.textContent='CPU wins! Refresh the tool to play again.'; over=true; return; }
+            statusEl.textContent = 'Your turn';
+            rollBtn.disabled = false;
+          }, 550);
+        }
+        rollBtn.onclick = function(){
+          if(over) return;
+          rollBtn.disabled = true;
+          var r = 1+Math.floor(Math.random()*6);
+          diceEl.textContent = r;
+          pos.you = Math.min(TRACK_LEN, pos.you+r);
+          place();
+          if(pos.you>=TRACK_LEN){ statusEl.textContent='You win! 🎉'; over=true; return; }
+          statusEl.textContent = "CPU's turn...";
+          cpuTurn();
+        };
+      }
+    };
+
+    /* ---------- 5. GUESS THE BUG ---------- */
+    TOOLS.bug = {
+      title: 'Guess the Bug',
+      render: function(){
+        return '\
+          <div class="flex flex-col gap-space-md">\
+            <div class="flex items-center justify-between">\
+              <span id="bug-progress" class="font-label-sm text-label-sm text-outline uppercase tracking-widest">Question 1 / 5</span>\
+              <span id="bug-score" class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">Score: 0</span>\
+            </div>\
+            <div id="bug-code" class="bg-surface-container-lowest rounded-lg p-space-md"></div>\
+            <div id="bug-feedback" class="font-body-sm text-body-sm text-on-surface-variant min-h-[1.5rem]"></div>\
+            <button id="bug-next" class="py-space-xs px-space-sm bg-surface-container-high text-on-surface font-label-sm text-label-sm uppercase rounded tracking-wider hover:text-secondary w-fit hidden">Next →</button>\
+          </div>';
+      },
+      init: function(){
+        var QUESTIONS = [
+          { lines:['function multiply(a, b) {','  let result = a * b;','  retun result;','}','console.log(multiply(3, 4));'], buggy:2, why:"`retun` is a typo for `return` — this throws a SyntaxError before the function can even run." },
+          { lines:['let total = 0;','for (let i = 0; i <= 5; i++) {','  total = total + i;','}','console.log(total); // expected sum 0..4'], buggy:1, why:"The loop uses `i <= 5` but the comment expects 0..4, so it runs one extra iteration — should be `i < 5`." },
+          { lines:['function isEven(n) {','  if (n % 2 = 0) {','    return true;','  }','  return false;','}'], buggy:1, why:"`n % 2 = 0` uses assignment `=` instead of comparison `==`/`===`. This is a syntax error." },
+          { lines:['const arr = [1,2,3];','let sum = 0;','for (let i = 0; i < arr.length; i++) {','  sum += arr[i+1];','}'], buggy:3, why:"`arr[i+1]` reads one index ahead, skipping the first element and reading undefined at the end — should be `arr[i]`." },
+          { lines:['def divide(a, b):','    return a / b','','print(divide(10, 0))'], buggy:1, why:"Dividing by zero on this call raises a ZeroDivisionError at runtime — line 2 needs a guard for `b == 0`." }
+        ];
+        var qi = 0, score = 0, answered=false;
+        function renderQ(){
+          answered=false;
+          var q = QUESTIONS[qi];
+          document.getElementById('bug-progress').textContent = 'Question ' + (qi+1) + ' / ' + QUESTIONS.length;
+          document.getElementById('bug-feedback').textContent = 'Click the line you think has the bug.';
+          document.getElementById('bug-next').classList.add('hidden');
+          var codeEl = document.getElementById('bug-code');
+          codeEl.innerHTML = '';
+          q.lines.forEach(function(line, idx){
+            var div = document.createElement('div');
+            div.className = 'bug-line';
+            div.textContent = (idx+1) + '  ' + line;
+            div.onclick = function(){
+              if(answered) return;
+              answered = true;
+              var fb = document.getElementById('bug-feedback');
+              if(idx === q.buggy){
+                div.classList.add('correct');
+                score++;
+                fb.textContent = '✅ Correct — ' + q.why;
+              } else {
+                div.classList.add('wrong');
+                codeEl.children[q.buggy].classList.add('correct');
+                fb.textContent = '❌ Not quite — ' + q.why;
+              }
+              document.getElementById('bug-score').textContent = 'Score: ' + score;
+              document.getElementById('bug-next').classList.remove('hidden');
+            };
+            codeEl.appendChild(div);
+          });
+        }
+        document.getElementById('bug-next').onclick = function(){
+          qi++;
+          if(qi >= QUESTIONS.length){
+            document.getElementById('bug-code').innerHTML = '';
+            document.getElementById('bug-feedback').textContent = 'Done! Final score: ' + score + ' / ' + QUESTIONS.length + '. Reopen the tool to try again.';
+            document.getElementById('bug-next').classList.add('hidden');
+            document.getElementById('bug-progress').textContent = 'Finished';
+            return;
+          }
+          renderQ();
+        };
+        renderQ();
+      }
+    };
+
+  })();
+  </script>
+</div></main><footer class="relative z-10 w-full bg-surface-container-lowest/90 backdrop-blur-md mt-space-xl py-space-xl"><div class="max-w-7xl mx-auto px-margin-mobile md:px-margin flex flex-col md:flex-row items-center justify-between gap-space-lg"><div class="flex flex-col items-center md:items-start gap-space-xs"><span class="font-headline-sm text-headline-sm uppercase tracking-tight text-on-surface">Samadrit Das</span><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Bespoke Computational Craft &amp; Interactive Engineering</span></div><div class="flex items-center gap-space-xl"><div class="flex items-center gap-space-xs"><span class="w-1.5 h-1.5 rounded-full bg-secondary shadow-[0_0_6px_#ffb86c]"></span><span class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">LAT 22.5726° N / LON 88.3639° E</span></div><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">© 2025 ALL RIGHTS RESERVED</span></div></div></footer></body></html>
